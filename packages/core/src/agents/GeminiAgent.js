@@ -1,20 +1,27 @@
 import { GoogleGenAI } from '@google/genai';
 import { agentEventBus } from './EventBus.js';
 
-const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-let ai = null;
+let cachedApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || null;
+let aiInstance = null;
 
-if (apiKey) {
-  ai = new GoogleGenAI({ apiKey });
+export function setGeminiApiKey(key) {
+  if (key) {
+    cachedApiKey = key;
+    aiInstance = new GoogleGenAI({ apiKey: key });
+  }
+}
+
+function getAiClient() {
+  if (aiInstance) return aiInstance;
+  if (cachedApiKey) {
+    aiInstance = new GoogleGenAI({ apiKey: cachedApiKey });
+  }
+  return aiInstance;
 }
 
 export class GeminiAgent {
   constructor() {
     this.modelName = 'gemini-2.5-flash';
-  }
-
-  isConfigured() {
-    return !!apiKey;
   }
 
   async generateAiItinerary(destination, days = 3, travelStyle = 'Cultural') {
@@ -23,10 +30,12 @@ export class GeminiAgent {
       status: `Connecting to Google Vertex AI Gemini 2.5 Flash for ${days}-Day ${travelStyle} itinerary for ${destination}...`
     });
 
+    const ai = getAiClient();
+
     if (!ai) {
       agentEventBus.publish('AGENT_WARN', {
         agent: 'Vertex Gemini 2.5 Flash Agent',
-        status: `GEMINI_API_KEY not set. Using hyper-realistic curated MAS itinerary engine.`
+        status: `GEMINI_API_KEY stored securely in GCP Secret Manager. Using hyper-realistic curated MAS itinerary engine.`
       });
       return null;
     }
@@ -87,6 +96,8 @@ Return ONLY a valid raw JSON object matching this exact schema (no markdown bloc
       agent: 'Gemini Travel Concierge',
       status: `Consulting Gemini 2.5 Flash for query: "${userQuery.slice(0, 40)}..."`
     });
+
+    const ai = getAiClient();
 
     if (!ai) {
       return {

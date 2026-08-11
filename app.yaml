@@ -1,7 +1,5 @@
 runtime: nodejs22
-
-env_variables:
-  GEMINI_API_KEY: ""
+instance_class: F1
 
 
 handlers:
