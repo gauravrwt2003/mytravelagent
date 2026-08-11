@@ -4,12 +4,20 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('mytravelagent_theme') || 'dark';
+    try {
+      return localStorage.getItem('mytravelagent_theme') || 'dark';
+    } catch (e) {
+      return 'dark';
+    }
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('mytravelagent_theme', theme);
+    try {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('mytravelagent_theme', theme);
+    } catch (e) {
+      // Safe fallback if localStorage is blocked
+    }
   }, [theme]);
 
   const toggleTheme = () => {
