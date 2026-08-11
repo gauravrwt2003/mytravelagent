@@ -107,12 +107,19 @@ const REAL_DESTINATION_ITINERARIES = {
   }
 };
 
+import { geminiAgent } from './GeminiAgent.js';
+
 export class ItineraryAgent {
   async generateItinerary(destination, days = 3, travelStyle = 'Balanced') {
     agentEventBus.publish('AGENT_ACTIVE', {
       agent: 'AI Itinerary Agent',
       status: `Searching live web archives for actual ${days}-Day ${travelStyle} travel guide for ${destination}...`
     });
+
+    const aiResult = await geminiAgent.generateAiItinerary(destination, days, travelStyle);
+    if (aiResult) {
+      return aiResult;
+    }
 
     return new Promise((resolve) => {
       setTimeout(() => {

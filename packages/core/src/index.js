@@ -5,6 +5,7 @@ import { dispatchBookingNotifications } from './services/notificationService.js'
 import { agentEventBus } from './agents/EventBus.js';
 import { agentEngine, AgentRegistry } from './agents/AgentRegistry.js';
 import { itineraryAgent, ItineraryAgent } from './agents/ItineraryAgent.js';
+import { geminiAgent, GeminiAgent } from './agents/GeminiAgent.js';
 
 export {
   mockDestinations,
@@ -16,5 +17,7 @@ export {
   agentEngine,
   AgentRegistry,
   itineraryAgent,
-  ItineraryAgent
+  ItineraryAgent,
+  geminiAgent,
+  GeminiAgent
 };
