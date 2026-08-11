@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "mydrproject-317504",
     "public": "packages/web/dist",
     "ignore": [
       "firebase.json",

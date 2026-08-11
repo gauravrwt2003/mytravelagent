@@ -13,8 +13,10 @@ COPY packages/web ./packages/web
 
 RUN npm run build --workspace=packages/web
 
-# Stage 2: Serve via Nginx
+# Stage 2: Serve via Nginx on Cloud Run Port 8080
 FROM nginx:alpine
 COPY --from=builder /app/packages/web/dist /usr/share/nginx/html
-EXPOSE 80
+COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

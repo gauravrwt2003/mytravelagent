@@ -1,28 +1,32 @@
 #!/usr/bin/env bash
 
 # ==========================================================================
-# RoamingBuddy - Google Cloud Platform (GCP) Global Deployment Script
+# RoamingBuddy - Google Cloud Platform (GCP) Global Cloud Run Deployment
 # GCP Project ID: mydrproject-317504
-# Scope: Global Cloud CDN + Multi-Region Cloud Run
+# Services: roamingbuddy-agents (Backend) & roamingbuddy-web (Frontend)
 # ==========================================================================
 
 set -e
 
 GCP_PROJECT_ID=${1:-"mydrproject-317504"}
-GCP_REGION=${2:-"us-central1"} # Primary Cloud Run Region
-SERVICE_NAME="roamingbuddy-agents"
-IMAGE_TAG="gcr.io/${GCP_PROJECT_ID}/${SERVICE_NAME}:latest"
+GCP_REGION=${2:-"us-central1"}
 
-echo "🚀 Starting Global GCP Deployment for RoamingBuddy..."
+BACKEND_SERVICE="roamingbuddy-agents"
+BACKEND_IMAGE="gcr.io/${GCP_PROJECT_ID}/${BACKEND_SERVICE}:latest"
+
+FRONTEND_SERVICE="roamingbuddy-web"
+FRONTEND_IMAGE="gcr.io/${GCP_PROJECT_ID}/${FRONTEND_SERVICE}:latest"
+
+echo "🚀 Starting Native GCP Deployment for RoamingBuddy..."
 echo "📍 GCP Project ID: ${GCP_PROJECT_ID}"
-echo "🌐 Global Scope: Cloud CDN Edge Network + Multi-Region Cloud Run"
+echo "🌏 GCP Region: ${GCP_REGION}"
 
 # 1. Set Active GCP Project
 echo "🔐 Configuring GCP Project..."
 gcloud config set project "${GCP_PROJECT_ID}"
 
 # 2. Enable Required GCP APIs
-echo "🛠️ Enabling GCP APIs (Cloud Run, Container Registry, Vertex AI, Pub/Sub)..."
+echo "🛠️ Enabling GCP APIs..."
 gcloud services enable \
   run.googleapis.com \
   containerregistry.googleapis.com \
@@ -31,14 +35,12 @@ gcloud services enable \
   pubsub.googleapis.com \
   secretmanager.googleapis.com
 
-# 3. Build & Push Container Image using Cloud Build Configuration
-echo "📦 Building & Pushing Cloud Run Container Image..."
+# 3. Build & Deploy Backend Agents Microservices
+echo "📦 Building & Deploying Backend Microservices (${BACKEND_SERVICE})..."
 gcloud builds submit . --config=cloudbuild.yaml
 
-# 4. Deploy Backend Agents Microservices to GCP Cloud Run
-echo "☁️ Deploying Agents Microservices to GCP Cloud Run..."
-gcloud run deploy "${SERVICE_NAME}" \
-  --image "${IMAGE_TAG}" \
+gcloud run deploy "${BACKEND_SERVICE}" \
+  --image "${BACKEND_IMAGE}" \
   --platform managed \
   --region "${GCP_REGION}" \
   --allow-unauthenticated \
@@ -47,12 +49,18 @@ gcloud run deploy "${SERVICE_NAME}" \
   --memory 1Gi \
   --cpu 1
 
-# 5. Build Web Frontend & Deploy Globally to Firebase Hosting + Cloud CDN
-echo "🌐 Building Web Frontend Production Bundle..."
-npm run build --workspace=packages/web
+# 4. Build & Deploy Frontend Web Application
+echo "🌐 Building & Deploying Frontend Web Application (${FRONTEND_SERVICE})..."
+gcloud builds submit . --config=cloudbuild-web.yaml
 
-echo "🔥 Deploying Frontend to Global Firebase Hosting Edge CDN..."
-npx firebase-tools deploy --only hosting --project "${GCP_PROJECT_ID}" --non-interactive
+gcloud run deploy "${FRONTEND_SERVICE}" \
+  --image "${FRONTEND_IMAGE}" \
+  --platform managed \
+  --region "${GCP_REGION}" \
+  --allow-unauthenticated \
+  --min-instances 0 \
+  --max-instances 10 \
+  --memory 512Mi \
+  --cpu 1
 
-echo "✅ Global GCP Deployment Completed Successfully!"
-echo "🌐 Global Web Application URL: https://${GCP_PROJECT_ID}.web.app"
+echo "✅ GCP Native Cloud Run Deployment Completed Successfully!"
