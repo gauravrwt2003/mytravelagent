@@ -4,3 +4,4 @@ export { processCreditCardPayment, processUPIPayment } from './services/paymentG
 export { dispatchBookingNotifications } from './services/notificationService';
 export { agentEventBus } from './agents/EventBus';
 export { agentEngine, AgentRegistry } from './agents/AgentRegistry';
+export { itineraryAgent, ItineraryAgent } from './agents/ItineraryAgent';

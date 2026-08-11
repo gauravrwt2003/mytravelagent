@@ -5,6 +5,8 @@ import { SearchConsole } from './components/SearchConsole';
 import { DestinationExplorer } from './components/DestinationExplorer';
 import { TransitResults } from './components/TransitResults';
 import { CheckoutModal } from './components/CheckoutModal';
+import { SeatPickerModal } from './components/SeatPickerModal';
+import { ItineraryPlanner } from './components/ItineraryPlanner';
 import { NotificationPreviewModal } from './components/NotificationPreviewModal';
 import { ArchitectureViewer } from './components/ArchitectureViewer';
 import { MyBookings } from './components/MyBookings';
@@ -24,6 +26,7 @@ export function AppContent() {
   });
 
   const [selectedTransit, setSelectedTransit] = useState(null);
+  const [showSeatPicker, setShowSeatPicker] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
   const [activeBooking, setActiveBooking] = useState(null);
@@ -32,7 +35,7 @@ export function AppContent() {
 
   const [savedBookings, setSavedBookings] = useState([]);
   const [isAgentDrawerOpen, setIsAgentDrawerOpen] = useState(false);
-  const [liveAgentCount, setLiveAgentCount] = useState(7);
+  const [liveAgentCount, setLiveAgentCount] = useState(8);
 
   useEffect(() => {
     handleExecuteSearch(searchParams);
@@ -52,6 +55,16 @@ export function AppContent() {
 
   const handleBookOption = (option) => {
     setSelectedTransit(option);
+    setShowSeatPicker(true);
+  };
+
+  const handleConfirmSeats = (seat) => {
+    setShowSeatPicker(false);
+    setSelectedTransit(prev => ({
+      ...prev,
+      selectedSeat: seat,
+      price: prev.price + seat.price
+    }));
     setShowCheckout(true);
   };
 
@@ -99,17 +112,22 @@ export function AppContent() {
           </>
         )}
 
-        {/* Tab 2: Destination Explorer */}
+        {/* Tab 2: AI Trip Itinerary Planner */}
+        {activeTab === 'itinerary' && (
+          <ItineraryPlanner onSelectDestination={handleSelectDestination} />
+        )}
+
+        {/* Tab 3: Destination Explorer */}
         {activeTab === 'destinations' && (
           <DestinationExplorer onSelectDestination={handleSelectDestination} />
         )}
 
-        {/* Tab 3: GCP Architecture & Diagrams */}
+        {/* Tab 4: GCP Architecture & Diagrams */}
         {activeTab === 'architecture' && (
           <ArchitectureViewer />
         )}
 
-        {/* Tab 4: My Bookings */}
+        {/* Tab 5: My Bookings */}
         {activeTab === 'bookings' && (
           <MyBookings
             bookings={savedBookings}
@@ -118,6 +136,15 @@ export function AppContent() {
         )}
 
       </main>
+
+      {/* Interactive Seat Picker Modal */}
+      {showSeatPicker && selectedTransit && (
+        <SeatPickerModal
+          transitOption={selectedTransit}
+          onConfirmSeats={handleConfirmSeats}
+          onClose={() => setShowSeatPicker(false)}
+        />
+      )}
 
       {/* Checkout Modal */}
       {showCheckout && selectedTransit && (

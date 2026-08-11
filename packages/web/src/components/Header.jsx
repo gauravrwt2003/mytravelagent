@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plane, Compass, FileText, BookmarkCheck, Sun, Moon, Activity, Sparkles } from 'lucide-react';
+import { Plane, Compass, FileText, BookmarkCheck, Sun, Moon, Activity, Sparkles, MapPin } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export function Header({ activeTab, setActiveTab, liveAgentCount, toggleAgentDrawer }) {
@@ -64,6 +64,26 @@ export function Header({ activeTab, setActiveTab, liveAgentCount, toggleAgentDra
           </button>
 
           <button
+            onClick={() => setActiveTab('itinerary')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.45rem 0.9rem',
+              borderRadius: '9999px',
+              border: 'none',
+              background: activeTab === 'itinerary' ? 'var(--brand-red)' : 'transparent',
+              color: activeTab === 'itinerary' ? '#fff' : 'var(--text-main)',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Sparkles size={16} /> AI Itinerary
+          </button>
+
+          <button
             onClick={() => setActiveTab('destinations')}
             style={{
               display: 'flex',
@@ -80,7 +100,7 @@ export function Header({ activeTab, setActiveTab, liveAgentCount, toggleAgentDra
               transition: 'all 0.2s ease'
             }}
           >
-            <Sparkles size={16} /> Destinations
+            <MapPin size={16} /> Destinations
           </button>
 
           <button
@@ -124,7 +144,7 @@ export function Header({ activeTab, setActiveTab, liveAgentCount, toggleAgentDra
           </button>
         </nav>
 
-        {/* Right Controls: Agent Drawer Trigger & Theme Toggle */}
+        {/* Right Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button
             onClick={toggleAgentDrawer}
