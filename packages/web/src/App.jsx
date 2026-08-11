@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/Header';
 import { SearchConsole } from './components/SearchConsole';
@@ -8,10 +8,14 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { SeatPickerModal } from './components/SeatPickerModal';
 import { ItineraryPlanner } from './components/ItineraryPlanner';
 import { NotificationPreviewModal } from './components/NotificationPreviewModal';
-import { ArchitectureViewer } from './components/ArchitectureViewer';
 import { MyBookings } from './components/MyBookings';
 import { AgentLiveFeed } from './components/AgentLiveFeed';
-import { agentEngine, agentEventBus } from '@mytravelagent/core';
+import { agentEngine } from '@mytravelagent/core';
+
+// Code-split ArchitectureViewer so mermaid library is loaded on demand
+const ArchitectureViewer = lazy(() =>
+  import('./components/ArchitectureViewer').then(module => ({ default: module.ArchitectureViewer }))
+);
 
 export function AppContent() {
   const [activeTab, setActiveTab] = useState('search');
@@ -124,7 +128,13 @@ export function AppContent() {
 
         {/* Tab 4: GCP Architecture & Diagrams */}
         {activeTab === 'architecture' && (
-          <ArchitectureViewer />
+          <Suspense fallback={
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+              Loading Interactive GCP Architecture Diagrams...
+            </div>
+          }>
+            <ArchitectureViewer />
+          </Suspense>
         )}
 
         {/* Tab 5: My Bookings */}
