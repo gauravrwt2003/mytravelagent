@@ -21,27 +21,27 @@ function getAiClient() {
 
 export class GeminiAgent {
   constructor() {
-    this.modelName = 'gemini-2.5-flash';
+    this.modelName = 'gemini-3.5-flash';
   }
 
   async generateAiItinerary(destination, days = 3, travelStyle = 'Cultural') {
     agentEventBus.publish('AGENT_ACTIVE', {
-      agent: 'Vertex Gemini 2.5 Flash Agent (Google Search Grounded)',
-      status: `Executing Google Web Search & Gemini 2.5 Flash synthesis for ${days}-Day ${travelStyle} itinerary for ${destination}...`
+      agent: 'Vertex Gemini 3.5 Flash Agent (Google Search Grounded)',
+      status: `Executing Google Web Search & Gemini 3.5 Flash synthesis for ${days}-Day ${travelStyle} itinerary for ${destination}...`
     });
 
     const ai = getAiClient();
 
     if (!ai) {
       agentEventBus.publish('AGENT_WARN', {
-        agent: 'Vertex Gemini 2.5 Flash Agent',
+        agent: 'Vertex Gemini 3.5 Flash Agent',
         status: `GEMINI_API_KEY stored securely in GCP Secret Manager. Using real-world destination search engine.`
       });
       return null;
     }
 
     try {
-      const prompt = `You are RoamingBuddy's Enterprise AI Travel Concierge powered by Google Cloud Vertex AI (Gemini 2.5 Flash) with Live Google Search Grounding.
+      const prompt = `You are RoamingBuddy's Enterprise AI Travel Concierge powered by Google Cloud Vertex AI (Gemini 3.5 Flash) with Live Google Search Grounding.
 Perform a live web search for ${destination} tourism, top actual attractions, iconic local restaurants, street food specialties, and current pricing estimates.
 Generate an ultra-realistic, detailed ${days}-Day ${travelStyle} trip itinerary for ${destination}. All pricing MUST be in Indian Rupees (₹ INR) with realistic budget estimates.
 
@@ -77,15 +77,15 @@ Return ONLY a valid raw JSON object matching this exact schema (no markdown bloc
       if (response && response.text) {
         const parsed = JSON.parse(response.text);
         agentEventBus.publish('AGENT_COMPLETE', {
-          agent: 'Vertex Gemini 2.5 Flash Agent',
-          status: `Successfully synthesized Live Google Search Grounded Itinerary for ${destination}!`
+          agent: 'Vertex Gemini 3.5 Flash Agent',
+          status: `Successfully synthesized Live Google Search Grounded Itinerary using Gemini 3.5 Flash for ${destination}!`
         });
         return parsed;
       }
     } catch (err) {
       console.error("Gemini AI API execution error:", err);
       agentEventBus.publish('AGENT_WARN', {
-        agent: 'Vertex Gemini 2.5 Flash Agent',
+        agent: 'Vertex Gemini 3.5 Flash Agent',
         status: `Gemini API fallback invoked: ${err.message}`
       });
     }
@@ -96,7 +96,7 @@ Return ONLY a valid raw JSON object matching this exact schema (no markdown bloc
   async askTravelConcierge(userQuery, context = {}) {
     agentEventBus.publish('AGENT_ACTIVE', {
       agent: 'Gemini Travel Concierge',
-      status: `Consulting Gemini 2.5 Flash with Google Search for query: "${userQuery.slice(0, 40)}..."`
+      status: `Consulting Gemini 3.5 Flash with Google Search for query: "${userQuery.slice(0, 40)}..."`
     });
 
     const ai = getAiClient();
@@ -121,12 +121,12 @@ Return ONLY a valid raw JSON object matching this exact schema (no markdown bloc
 
       agentEventBus.publish('AGENT_COMPLETE', {
         agent: 'Gemini Travel Concierge',
-        status: 'Gemini 2.5 Flash response generated with Google Search Grounding!'
+        status: 'Gemini 3.5 Flash response generated with Google Search Grounding!'
       });
 
       return {
         reply: response.text,
-        source: 'Google Cloud Vertex AI Gemini 2.5 Flash (Google Search Grounded)'
+        source: 'Google Cloud Vertex AI Gemini 3.5 Flash (Google Search Grounded)'
       };
     } catch (err) {
       return {
