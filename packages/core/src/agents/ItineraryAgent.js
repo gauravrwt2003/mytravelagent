@@ -1,6 +1,5 @@
-import { agentEventBus } from './EventBus';
+import { agentEventBus } from './EventBus.js';
 
-// Authentic Real Travel Itineraries Repository & Real Information Engine
 const REAL_DESTINATION_ITINERARIES = {
   "Goa": {
     daysCount: 3,
@@ -117,7 +116,6 @@ export class ItineraryAgent {
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        // Look up real destination itinerary or generate structured real-world plan
         const realData = REAL_DESTINATION_ITINERARIES[destination];
 
         if (realData) {
@@ -138,7 +136,6 @@ export class ItineraryAgent {
           return resolve(itinerary);
         }
 
-        // Generic dynamic real-world template for custom user destinations
         const customPlan = {
           destination,
           daysCount: days,

@@ -1,8 +1,8 @@
-import { agentEventBus } from './EventBus';
-import { mockDestinations } from '../services/mockDestinations';
-import { searchTransitOptions } from '../services/mockTransitInventory';
-import { processCreditCardPayment, processUPIPayment } from '../services/paymentGateway';
-import { dispatchBookingNotifications } from '../services/notificationService';
+import { agentEventBus } from './EventBus.js';
+import { mockDestinations } from '../services/mockDestinations.js';
+import { searchTransitOptions } from '../services/mockTransitInventory.js';
+import { processCreditCardPayment, processUPIPayment } from '../services/paymentGateway.js';
+import { dispatchBookingNotifications } from '../services/notificationService.js';
 
 export class AgentRegistry {
   async exploreDestination(destName) {

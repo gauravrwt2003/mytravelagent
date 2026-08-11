@@ -1,11 +1,11 @@
 import http from 'http';
-import { mockDestinations } from './services/mockDestinations';
-import { searchTransitOptions } from './services/mockTransitInventory';
-import { processCreditCardPayment, processUPIPayment } from './services/paymentGateway';
-import { dispatchBookingNotifications } from './services/notificationService';
-import { agentEventBus } from './agents/EventBus';
-import { agentEngine, AgentRegistry } from './agents/AgentRegistry';
-import { itineraryAgent, ItineraryAgent } from './agents/ItineraryAgent';
+import { mockDestinations } from './services/mockDestinations.js';
+import { searchTransitOptions } from './services/mockTransitInventory.js';
+import { processCreditCardPayment, processUPIPayment } from './services/paymentGateway.js';
+import { dispatchBookingNotifications } from './services/notificationService.js';
+import { agentEventBus } from './agents/EventBus.js';
+import { agentEngine, AgentRegistry } from './agents/AgentRegistry.js';
+import { itineraryAgent, ItineraryAgent } from './agents/ItineraryAgent.js';
 
 export {
   mockDestinations,
@@ -20,11 +20,10 @@ export {
   ItineraryAgent
 };
 
-// Start Native HTTP Server for GCP Cloud Run
+// Native HTTP Server for GCP Cloud Run
 const PORT = process.env.PORT || 8080;
 
 const server = http.createServer((req, res) => {
-  // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -36,7 +35,6 @@ const server = http.createServer((req, res) => {
 
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  // Health Check Endpoint for Cloud Run
   if (url.pathname === '/' || url.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
@@ -47,7 +45,6 @@ const server = http.createServer((req, res) => {
     }));
   }
 
-  // API Router
   let body = '';
   req.on('data', chunk => { body += chunk; });
   req.on('end', async () => {
@@ -91,6 +88,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 RoamingBuddy Agents Cloud Run Service listening on port ${PORT}`);
 });
