@@ -10,4 +10,4 @@ EXPOSE 8080
 ENV PORT=8080
 ENV NODE_ENV=production
 
-CMD ["node", "packages/core/src/index.js"]
+CMD ["node", "packages/core/src/server.js"]
