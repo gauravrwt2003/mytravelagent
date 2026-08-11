@@ -9,7 +9,7 @@
 set -e
 
 GCP_PROJECT_ID=${1:-"mydrproject-317504"}
-GCP_REGION=${2:-"us-central1"} # Primary Cloud Run Region with Global CDN Routing
+GCP_REGION=${2:-"us-central1"} # Primary Cloud Run Region
 SERVICE_NAME="roamingbuddy-agents"
 IMAGE_TAG="gcr.io/${GCP_PROJECT_ID}/${SERVICE_NAME}:latest"
 
@@ -31,9 +31,9 @@ gcloud services enable \
   pubsub.googleapis.com \
   secretmanager.googleapis.com
 
-# 3. Build & Push Container Image to Google Container Registry
+# 3. Build & Push Container Image using Cloud Build Configuration
 echo "📦 Building & Pushing Cloud Run Container Image..."
-gcloud builds submit --tag "${IMAGE_TAG}" -f packages/core/Dockerfile .
+gcloud builds submit . --config=cloudbuild.yaml
 
 # 4. Deploy Backend Agents Microservices to GCP Cloud Run
 echo "☁️ Deploying Agents Microservices to GCP Cloud Run..."
@@ -52,7 +52,7 @@ echo "🌐 Building Web Frontend Production Bundle..."
 npm run build --workspace=packages/web
 
 echo "🔥 Deploying Frontend to Global Firebase Hosting Edge CDN..."
-npx firebase-tools deploy --only hosting --project "${GCP_PROJECT_ID}"
+npx firebase-tools deploy --only hosting --project "${GCP_PROJECT_ID}" --non-interactive
 
 echo "✅ Global GCP Deployment Completed Successfully!"
 echo "🌐 Global Web Application URL: https://${GCP_PROJECT_ID}.web.app"
