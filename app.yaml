@@ -1,0 +1,17 @@
+runtime: nodejs22
+instance_class: F1
+
+handlers:
+  - url: /assets
+    static_dir: packages/web/dist/assets
+    secure: always
+
+  - url: /(.*\.(json|ico|svg|png|jpg|jpeg|js|css|woff|woff2))$
+    static_files: packages/web/dist/\1
+    upload: packages/web/dist/(.*\.(json|ico|svg|png|jpg|jpeg|js|css|woff|woff2))$
+    secure: always
+
+  - url: /.*
+    static_files: packages/web/dist/index.html
+    upload: packages/web/dist/index.html
+    secure: always
